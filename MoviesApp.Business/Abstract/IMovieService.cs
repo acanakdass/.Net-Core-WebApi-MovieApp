@@ -9,7 +9,7 @@ namespace MoviesApp.Business.Abstract
 {
     public interface IMovieService
     {
-        List<Movie> GetAllMovies();
+        Task<List<Movie>> GetAllMovies();
 
         Movie GetMovieById(int id);
 

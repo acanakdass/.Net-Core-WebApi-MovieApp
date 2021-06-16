@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MoviesApp.Business.Abstract;
 using MoviesApp.Business.Concrete;
@@ -6,6 +7,7 @@ using MoviesApp.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MoviesApp.WebAPI.Controllers
@@ -22,13 +24,17 @@ namespace MoviesApp.WebAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        [Route("[action]")]
+        //[EnableCors]
+        public async Task<IActionResult> GetAll()
         {
-            var movies = _movieService.GetAllMovies();
+            var movies = await _movieService.GetAllMovies();
+            var moviesJson = JsonSerializer.Serialize(movies);
             return Ok(movies); //200 ok döndür ve body'sine movies ekle
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        [HttpGet]
+        [Route("[action]/{id}")]
+        public IActionResult GetMovieById(int id)
         {
             var movie = _movieService.GetMovieById(id);
             if (movie != null)
@@ -38,7 +44,20 @@ namespace MoviesApp.WebAPI.Controllers
             return NotFound();//404
         }
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public IActionResult GetMovieByName(string name)
+        {
+            //var movie = _movieService.GetAllMovies().Where(m=>m.Name==name).FirstOrDefault();
+            //if (movie != null)
+            //{
+            //    return Ok(movie); //200 ok => body'de movie ile birlikte
+            //}
+            return NotFound();//404
+        }
+
         [HttpPost]
+        [Route("[action]")]
         public IActionResult Post([FromBody] Movie movie)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
         {
             if (ModelState.IsValid)
@@ -53,15 +72,27 @@ namespace MoviesApp.WebAPI.Controllers
         }
 
         [HttpPut]
-        public Movie Put([FromBody] Movie movie)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
+        [Route("[action]")]
+        public IActionResult Put([FromBody] Movie movie)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
         {
-            return _movieService.UpdateMovie(movie);
+            if (ModelState.IsValid)
+            {
+                var updatedMovie = _movieService.UpdateMovie(movie);
+                return Ok(updatedMovie); //200
+            }
+            return BadRequest(ModelState);
         }
 
         [HttpDelete]
-        public void Delete(int id)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
+        public IActionResult Delete(int id)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
         {
-            _movieService.DeleteMovie(id);
+            var movieToDelete = _movieService.GetMovieById(id);
+            if (movieToDelete != null)
+            {
+                _movieService.DeleteMovie(id);
+                return Ok(); //200
+            }
+            return NotFound();
         }
 
     }

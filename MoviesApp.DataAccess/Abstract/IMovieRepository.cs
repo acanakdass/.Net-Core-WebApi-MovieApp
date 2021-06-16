@@ -9,7 +9,7 @@ namespace MoviesApp.DataAccess.Abstract
 {
     public interface IMovieRepository
     {
-        List<Movie> GetAllMovies();
+        Task<List<Movie>> GetAllMovies();
 
         Movie GetMovieById(int id);
 

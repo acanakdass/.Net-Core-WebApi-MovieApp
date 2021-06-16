@@ -31,7 +31,7 @@ namespace MoviesApp.DataAccess.Concrete
             }
         }
 
-        public List<Movie> GetAllMovies()
+        public async Task<List<Movie>> GetAllMovies()
         {
             using (var movieDbContext = new MoviesDbContext())
             {

@@ -1,0 +1,34 @@
+﻿@model List<Movie>
+<div id="modalPlaceHolder" aria-hidden="true"></div>
+
+<div>
+    <div id="crudButtons">
+        <button id="btnCreateMovie" class="btn btn-outline-primary btn-block">Create Movie</button>
+    </div>
+    <table id="moviesTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Artists</th>
+                <th scope="col">Subject</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in Model)
+            {
+                <tr id="@movie.Id">
+                    <td>@movie.Id</td>
+                    <td>@movie.Name</td>
+                    <td>@movie.Description</td>
+                    <td>@movie.Artists</td>
+                    <td>@movie.Subject</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts{
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}

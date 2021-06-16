@@ -29,9 +29,9 @@ namespace MoviesApp.Business.Concrete
             _movieRepository.DeleteMovie(id);
         }
 
-        public List<Movie> GetAllMovies()
+        public async Task<List<Movie>> GetAllMovies()
         {
-            return _movieRepository.GetAllMovies();
+            return await _movieRepository.GetAllMovies();
         }
 
         public Movie GetMovieById(int id)
