@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MoviesApp.Business.Abstract;
 using MoviesApp.Business.Concrete;
 using MoviesApp.Entities;
+using MoviesApp.Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,16 @@ namespace MoviesApp.WebAPI.Controllers
             var moviesJson = JsonSerializer.Serialize(movies);
             return Ok(movies); //200 ok döndür ve body'sine movies ekle
         }
+        //[HttpGet]
+        //[Route("[action]")]
+        ////[EnableCors]
+        //public async Task<IActionResult> GetMoviesWithDto()
+        //{
+        //    var movies = await _movieService.GetAllMovies();
+        //    var moviesDto =
+        //    var moviesJson = JsonSerializer.Serialize(movies);
+        //    return Ok(movies); //200 ok döndür ve body'sine movies ekle
+        //}
         [HttpGet]
         [Route("[action]/{id}")]
         public IActionResult GetMovieById(int id)
@@ -63,11 +74,13 @@ namespace MoviesApp.WebAPI.Controllers
             if (ModelState.IsValid)
             {
                 var createdMovie = _movieService.CreateMovie(movie);
-                return CreatedAtAction("Get", new { id = createdMovie.Id }, createdMovie);
+                return CreatedAtAction("GetMovieById", new { id = createdMovie.Id }, createdMovie);
+                //return Ok();
+
             }
             else
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState); //400+validation errors
             }
         }
 
@@ -84,6 +97,7 @@ namespace MoviesApp.WebAPI.Controllers
         }
 
         [HttpDelete]
+        [Route("[action]/{id}")]
         public IActionResult Delete(int id)  //[FromBody] =>> gelen body'de Movie beklediğini belirtir
         {
             var movieToDelete = _movieService.GetMovieById(id);
@@ -92,7 +106,10 @@ namespace MoviesApp.WebAPI.Controllers
                 _movieService.DeleteMovie(id);
                 return Ok(); //200
             }
-            return NotFound();
+            else
+            {
+                return NotFound();
+            }
         }
 
     }

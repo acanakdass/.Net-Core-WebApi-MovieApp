@@ -3,25 +3,23 @@ using Microsoft.Extensions.Logging;
 using MoviesApp.Entities;
 using MoviesApp.Entities.Dtos;
 using MoviesApp.MVC.Models;
+using MoviesApp.WebAPI.Helpers.Extentions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MoviesApp.MVC.Controllers
 {
     public class MovieController : Controller
     {
-        private readonly ILogger<MovieController> _logger;
+
         private readonly string baseApiUrl = "https://localhost:5001/api/Movies";
 
-        public MovieController(ILogger<MovieController> logger)
-        {
-            _logger = logger;
-        }
 
         public async Task<IActionResult> Index()
         {
@@ -47,23 +45,55 @@ namespace MoviesApp.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(MovieAddDto movieAddDto)
+        public async Task<IActionResult> Create(Movie movie)
         {
-            //if (ModelState.IsValid)
+
+            //var movieAddAjaxModel = new MovieAddAjaxModel
             //{
-                var contentToSend = JsonConvert.SerializeObject(movieAddDto);
+            //    MovieAddPartial = await this.RenderViewToStringAsync("_MovieAddModalPartial", movieAddDto),
+            //    MovieAddDto= movieAddDto,
+            //};
+
+            if (ModelState.IsValid)
+            {
+                var contentToSend = JsonConvert.SerializeObject(movie);
+                Console.WriteLine(contentToSend);
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.PostAsync(baseApiUrl + "/Post", new StringContent(contentToSend)))
+                    var jsonData = JsonConvert.SerializeObject(movie);
+                    var dataToSend = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PostAsync(baseApiUrl + "/Post", dataToSend))
                     {
                         response.EnsureSuccessStatusCode();
-
-                        string content = await response.Content.ReadAsStringAsync();
-                        return PartialView("_MovieAddModalPartial");
+                        Console.WriteLine(response.StatusCode);
+                        return PartialView("_MovieAddModalPartial", movie);
                     }
                 }
-            //}
-            //return Json(movieAddDto);
+            }
+            return PartialView("_MovieAddModalPartial", movie);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int movieToDeleteId)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                Console.WriteLine(movieToDeleteId);
+                using (var httpClient = new HttpClient())
+                {
+                    //var jsonData = JsonConvert.SerializeObject(movieToDeleteId);
+                    //var dataToSend = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.DeleteAsync($"{baseApiUrl}/Delete/{movieToDeleteId}"))
+                    {
+                        var urll = $"{baseApiUrl}/Delete/{movieToDeleteId}";
+                        response.EnsureSuccessStatusCode();
+                        Console.WriteLine(response.StatusCode);
+                        return Ok();
+                    }
+                }
+            }
+            return Error();
         }
 
         public IActionResult Privacy()

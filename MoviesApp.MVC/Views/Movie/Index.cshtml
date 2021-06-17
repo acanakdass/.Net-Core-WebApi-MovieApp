@@ -13,18 +13,23 @@
                 <th scope="col">Description</th>
                 <th scope="col">Artists</th>
                 <th scope="col">Subject</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var movie in Model)
             {
-                <tr id="@movie.Id">
-                    <td>@movie.Id</td>
-                    <td>@movie.Name</td>
-                    <td>@movie.Description</td>
-                    <td>@movie.Artists</td>
-                    <td>@movie.Subject</td>
-                </tr>
+            <tr id="@movie.Id">
+                <td>@movie.Id</td>
+                <td>@movie.Name</td>
+                <td>@movie.Description</td>
+                <td>@movie.Artists</td>
+                <td>@movie.Subject</td>
+                <td style="padding:3px">
+                    <button id="btnEdit" data-id="@movie.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                    <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@movie.Id"><i class="fas fa-minus-circle"></i> Sil</button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

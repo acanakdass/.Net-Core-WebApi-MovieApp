@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoviesApp.Entities\MoviesApp.Entities.csproj" />
+    <ProjectReference Include="..\MoviesApp.WebAPI\MoviesApp.WebAPI.csproj" />
   </ItemGroup>
 
 </Project>
