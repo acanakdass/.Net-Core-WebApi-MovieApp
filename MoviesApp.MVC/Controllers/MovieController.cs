@@ -20,7 +20,7 @@ namespace MoviesApp.MVC.Controllers
 
         private readonly string baseApiUrl = "https://localhost:5001/api/Movies";
 
-
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var movies = new List<Movie>();
@@ -37,6 +37,26 @@ namespace MoviesApp.MVC.Controllers
             }
             return View(movies);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMovieById(int id)
+        {
+            var movie = new Movie();
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"{baseApiUrl}/GetMovieById/{id}"))
+                {
+                    string res = await response.Content.ReadAsStringAsync();
+                    movie = JsonConvert.DeserializeObject<Movie>(res);
+                    //will throw an exception if not successful
+                    response.EnsureSuccessStatusCode();
+                }
+
+            }
+            return PartialView("_MovieUpdateModalPartial", movie);
+
+        }
+
 
         [HttpGet]
         public IActionResult Create()
@@ -72,6 +92,38 @@ namespace MoviesApp.MVC.Controllers
             }
             return PartialView("_MovieAddModalPartial", movie);
         }
+
+
+
+        [HttpPut]
+        public async Task<IActionResult> Update(Movie movieToUpdate)
+        {
+
+            //var movieAddAjaxModel = new MovieAddAjaxModel
+            //{
+            //    MovieAddPartial = await this.RenderViewToStringAsync("_MovieAddModalPartial", movieAddDto),
+            //    MovieAddDto= movieAddDto,
+            //};
+
+            if (ModelState.IsValid)
+            {
+                var contentToSend = JsonConvert.SerializeObject(movieToUpdate);
+                Console.WriteLine(contentToSend);
+                using (var httpClient = new HttpClient())
+                {
+                    var jsonData = JsonConvert.SerializeObject(movieToUpdate);
+                    var dataToSend = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PutAsync(baseApiUrl + "/Put", dataToSend))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        Console.WriteLine(response.StatusCode);
+                        return PartialView("_MovieAddModalPartial", movieToUpdate);
+                    }
+                }
+            }
+            return PartialView("_MovieUpdateModalPartial", movieToUpdate);
+        }
+
 
         [HttpDelete]
         public async Task<IActionResult> Delete(int movieToDeleteId)
