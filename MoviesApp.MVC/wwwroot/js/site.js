@@ -154,6 +154,15 @@ $(document).ready(function () {
             if (isFormValid) {
                 placeHolderDiv.find('.modal').modal('hide');
                 var createdMoviesName = formDataArray[1].value;
+                Swal.fire(
+                    'Başarılı!',
+                    `${createdMoviesName} successfully created`,
+                    'success'
+                );
+                setTimeout(() => {
+
+                    location.reload();
+                }, 3000);
                 toastr.success(`${createdMoviesName} successfully created`, 'Başarılı İşlem!');
             }
             else {
